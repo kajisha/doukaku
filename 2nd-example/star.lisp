@@ -38,10 +38,16 @@
           (stars-cruise (cons next-star tours))
           (push next-star *cruise*))))
 
+(defun string->list (str)
+  (mapcar 'string (coerce str 'list)))
+
+(defun list->string (lst)
+  (coerce (mapcar 'character lst) 'string))
+
 (defun run-cruise (tours)
   (setq *cruise* nil)
-  (stars-cruise (mapcar 'string (coerce tours 'list)))
-  (coerce (mapcar 'character (reverse *cruise*)) 'string))
+  (stars-cruise (string->list tours))
+  (list->string (reverse *cruise*)))
 
 ; unit test
 (ql:quickload :lisp-unit)
