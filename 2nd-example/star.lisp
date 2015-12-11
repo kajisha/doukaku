@@ -1,26 +1,20 @@
 (defparameter *stars*
-  (list '(:star "A" :white "I" :red "H")
-        '(:star "B" :white "G" :red "D")
-        '(:star "C" :white "A" :red "J")
-        '(:star "D" :white "I" :red "F")
-        '(:star "E" :white "C" :red "B")
-        '(:star "F" :white "A" :red "H")
-        '(:star "G" :white "E" :red "D")
-        '(:star "H" :white "C" :red "J")
-        '(:star "I" :white "G" :red "F")
-        '(:star "J" :white "E" :red "B")))
+  (list '(:star "A" :w "I" :r "H")
+        '(:star "B" :w "G" :r "D")
+        '(:star "C" :w "A" :r "J")
+        '(:star "D" :w "I" :r "F")
+        '(:star "E" :w "C" :r "B")
+        '(:star "F" :w "A" :r "H")
+        '(:star "G" :w "E" :r "D")
+        '(:star "H" :w "C" :r "J")
+        '(:star "I" :w "G" :r "F")
+        '(:star "J" :w "E" :r "B")))
 
 (defun string->list (str)
   (mapcar 'string (coerce str 'list)))
 
 (defun list->string (lst)
   (coerce (mapcar 'character lst) 'string))
-
-(defun route (name)
-  (cond
-    ((equal name "W") :white)
-    ((equal name "R") :red)
-    (t nil)))
 
 (defun name-of (star)
   (getf star :star))
@@ -32,23 +26,20 @@
       *stars*)))
 
 (defun dest (&key from route)
-  (find-star (getf from (route route))))
+  (if route
+    (find-star (getf from (intern route :keyword)))))
 
-(defun stars-cruise (start course visited)
-  (push (name-of start) visited)
-
-  (let* ((destination (dest :from start :route (car course)))
-         (course-remaining (cdr course)))
-
-        (if destination
-          (stars-cruise destination course-remaining visited)
-          (list->string (reverse visited)))))
-
+(defun stars-cruise (star course &optional book)
+  (push (name-of star) book)
+  (let* ((destination (dest :from star :route (car course))))
+    (if destination
+      (stars-cruise destination (cdr course) book)
+      (list->string (reverse book)))))
 
 (defun run-cruise (course)
   (let* ((course-list (string->list course))
          (start (find-star (car course-list))))
-    (stars-cruise start (cdr course-list) nil)))
+    (stars-cruise start (cdr course-list))))
 
 (defun test (course visited)
   (equal (run-cruise course) visited))
