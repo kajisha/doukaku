@@ -16,32 +16,32 @@
 (defun list->string (lst)
   (coerce (mapcar 'character lst) 'string))
 
-(defun star (s)
-  (getf s :star))
+(defun route (name)
+  (if (equal name "W") :white :red))
+
+(defun name-of (star)
+  (getf star :star))
 
 (defun find-star (star)
   (car
     (remove-if-not
-      #'(lambda (s) (equal (star s) star))
+      #'(lambda (s) (equal (name-of s) star))
       *stars*)))
 
-(defun route (name)
-  (if (equal name "W") :white :red))
-
-(defun next-star (current route-name)
-  (find-star (getf current (route route-name))))
+(defun dest (&key from route)
+  (find-star (getf from (route route))))
 
 (defun stars-cruise (course visited)
-  (let* ((current-star (find-star (pop course)))
-         (next-route (pop course))
-         (next-star (star (next-star current-star next-route))))
+  (let* ((current-star (find-star (car course)))
+         (destination (name-of (dest :from current-star :route (cadr course))))
+         (course-remaining (cddr course)))
 
-        (push (star current-star) visited)
+        (push (name-of current-star) visited)
 
-        (if course
-          (stars-cruise (cons next-star course) visited)
+        (if course-remaining
+          (stars-cruise (cons destination course-remaining) visited)
           (progn
-            (push next-star visited)
+            (push destination visited)
             (list->string (reverse visited))))))
 
 (defun test (course visited)
