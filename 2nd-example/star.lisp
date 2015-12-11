@@ -17,7 +17,10 @@
   (coerce (mapcar 'character lst) 'string))
 
 (defun route (name)
-  (if (equal name "W") :white :red))
+  (cond
+    ((equal name "W") :white)
+    ((equal name "R") :red)
+    (t nil)))
 
 (defun name-of (star)
   (getf star :star))
@@ -31,18 +34,16 @@
 (defun dest (&key from route)
   (find-star (getf from (route route))))
 
-(defun stars-cruise (course visited)
-  (let* ((current-star (find-star (car course)))
-         (destination (name-of (dest :from current-star :route (cadr course))))
-         (course-remaining (cddr course)))
+(defun stars-cruise (start course visited)
+  (push (name-of start) visited)
 
-        (push (name-of current-star) visited)
+  (let* ((destination (dest :from start :route (car course)))
+         (course-remaining (cdr course)))
 
-        (if course-remaining
-          (stars-cruise (cons destination course-remaining) visited)
-          (progn
-            (push destination visited)
-            (list->string (reverse visited))))))
+        (if destination
+          (stars-cruise destination course-remaining visited)
+          (list->string (reverse visited)))))
+
 
 (defun run-cruise (course)
   (let* ((course-list (string->list course))
