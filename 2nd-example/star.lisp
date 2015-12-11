@@ -44,8 +44,13 @@
             (push destination visited)
             (list->string (reverse visited))))))
 
+(defun run-cruise (course)
+  (let* ((course-list (string->list course))
+         (start (find-star (car course-list))))
+    (stars-cruise start (cdr course-list) nil)))
+
 (defun test (course visited)
-  (equal (stars-cruise (string->list course) nil) visited))
+  (equal (run-cruise course) visited))
 
 ; unit test
 (ql:quickload :lisp-unit)
