@@ -25,21 +25,22 @@
       #'(lambda (s) (equal (name-of s) star))
       *stars*)))
 
-(defun dest (&key from route)
+(defun destination (&key from route)
   (if route
     (find-star (getf from (intern route :keyword)))))
 
-(defun stars-cruise (star course &optional book)
-  (push (name-of star) book)
-  (let* ((destination (dest :from star :route (car course))))
-    (if destination
-      (stars-cruise destination (cdr course) book)
-      (list->string (reverse book)))))
+(defun stars-cruise (&key star course)
+  (if star
+    (cons (name-of star)
+          (stars-cruise
+            :star (destination :from star :route (car course))
+            :course (cdr course)))))
 
 (defun run-cruise (course)
-  (let* ((course-list (string->list course))
-         (start (find-star (car course-list))))
-    (stars-cruise start (cdr course-list))))
+  (list->string
+    (stars-cruise
+      :star (find-star (car (string->list course)))
+      :course (cdr (string->list course)))))
 
 (defun test (course visited)
   (equal (run-cruise course) visited))
