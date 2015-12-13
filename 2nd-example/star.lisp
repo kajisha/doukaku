@@ -36,11 +36,11 @@
             :star (destination :from star :route (car course))
             :course (cdr course)))))
 
-(defun run-cruise (course)
+(defun run-cruise (course &aux (course-list (string->list course)))
   (list->string
     (stars-cruise
-      :star (find-star (car (string->list course)))
-      :course (cdr (string->list course)))))
+      :star (find-star (car course-list))
+      :course (cdr course-list))))
 
 (defun test (course visited)
   (equal (run-cruise course) visited))
